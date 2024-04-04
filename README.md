@@ -1,2 +1,3 @@
-# clip
-command line interface programming
+#CLIP
+Creative Learning In Python
+
