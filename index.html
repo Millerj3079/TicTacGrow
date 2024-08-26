@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Grow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 5px;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #scoreboard {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="board"></div>
+    <div id="scoreboard">
+        <p>Player X: <span id="scoreX">0</span> | Player O: <span id="scoreO">0</span></p>
+    </div>
+</div>
+
+<script>
+    const board = document.getElementById('board');
+    const scoreX = document.getElementById('scoreX');
+    const scoreO = document.getElementById('scoreO');
+    let currentPlayer = 'X';
+    let boardSize = 3;
+    let boardArray = Array(boardSize).fill().map(() => Array(boardSize).fill(''));
+    let score = { X: 0, O: 0 };
+
+    function initializeBoard() {
+        board.innerHTML = '';
+        board.style.gridTemplateColumns = `repeat(${boardSize}, 60px)`;
+        for (let i = 0; i < boardSize; i++) {
+            for (let j = 0; j < boardSize; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                cell.addEventListener('click', handleMove);
+                board.appendChild(cell);
+            }
+        }
+    }
+
+    function handleMove(event) {
+        const row = event.target.dataset.row;
+        const col = event.target.dataset.col;
+        if (boardArray[row][col] === '') {
+            boardArray[row][col] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            if (checkWin(row, col)) {
+                alert(`${currentPlayer} wins!`);
+                score[currentPlayer]++;
+                updateScore();
+                expandBoard();
+            } else if (checkDraw()) {
+                alert("It's a draw!");
+                expandBoard();
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        }
+    }
+
+    function checkWin(row, col) {
+        row = parseInt(row);
+        col = parseInt(col);
+        // Check row
+        if (boardArray[row].every(cell => cell === currentPlayer)) return true;
+        // Check column
+        if (boardArray.every(row => row[col] === currentPlayer)) return true;
+        // Check diagonals
+        if (row === col && boardArray.every((row, i) => row[i] === currentPlayer)) return true;
+        if (row + col === boardSize - 1 && boardArray.every((row, i) => row[boardSize - 1 - i] === currentPlayer)) return true;
+        return false;
+    }
+
+    function checkDraw() {
+        return boardArray.flat().every(cell => cell !== '');
+    }
+
+    function expandBoard() {
+        boardSize++;
+        boardArray = Array(boardSize).fill().map(() => Array(boardSize).fill(''));
+        initializeBoard();
+    }
+
+    function updateScore() {
+        scoreX.textContent = score.X;
+        scoreO.textContent = score.O;
+    }
+
+    initializeBoard();
+</script>
+
+</body>
+</html>
