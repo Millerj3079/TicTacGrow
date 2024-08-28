@@ -12,118 +12,135 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
+            background-color: #f0f0f0;
         }
-        #game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #board {
+        #game-board {
             display: grid;
-            grid-template-columns: repeat(3, 60px);
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
             gap: 5px;
+            margin-bottom: 20px;
         }
         .cell {
-            width: 60px;
-            height: 60px;
-            background-color: white;
-            border: 1px solid #333;
+            width: 100px;
+            height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 24px;
+            background-color: white;
             cursor: pointer;
-        }
-        #scoreboard {
-            margin-top: 20px;
+            border: 2px solid #000;
             text-align: center;
+        }
+        .cell.player-1 { background-color: red; }
+        .cell.player-2 { background-color: green; }
+        .cell.player-3 { background-color: blue; }
+        .cell.player-4 { background-color: yellow; }
+        .cell.player-5 { background-color: purple; }
+        .cell.player-6 { background-color: orange; }
+        .cell.player-7 { background-color: cyan; }
+        .cell.player-8 { background-color: magenta; }
+        .cell.player-9 { background-color: brown; }
+        #status {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        #reset-button {
+            padding: 10px 20px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
+    <div id="status">Player 1's turn</div>
+    <div id="game-board"></div>
+    <button id="reset-button">Reset Game</button>
 
-<div id="game-container">
-    <div id="board"></div>
-    <div id="scoreboard">
-        <p>Player X: <span id="scoreX">0</span> | Player O: <span id="scoreO">0</span></p>
-    </div>
-</div>
+    <script>
+        let players = [];
+        let currentPlayerIndex = 0;
+        let boardSize = 3;
+        let board = [];
 
-<script>
-    const board = document.getElementById('board');
-    const scoreX = document.getElementById('scoreX');
-    const scoreO = document.getElementById('scoreO');
-    let currentPlayer = 'X';
-    let boardSize = 3;
-    let boardArray = Array(boardSize).fill().map(() => Array(boardSize).fill(''));
-    let score = { X: 0, O: 0 };
+        function initializeGame() {
+            let numPlayers = prompt("Enter the number of players (1-9):");
+            numPlayers = Math.min(Math.max(parseInt(numPlayers), 1), 9);
 
-    function initializeBoard() {
-        board.innerHTML = '';
-        board.style.gridTemplateColumns = `repeat(${boardSize}, 60px)`;
-        for (let i = 0; i < boardSize; i++) {
-            for (let j = 0; j < boardSize; j++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                cell.dataset.row = i;
-                cell.dataset.col = j;
-                cell.addEventListener('click', handleMove);
-                board.appendChild(cell);
+            players = [];
+            for (let i = 1; i <= numPlayers; i++) {
+                players.push({
+                    id: i,
+                    color: getPlayerColor(i),
+                    currentStreak: 3,
+                    points: 0
+                });
             }
+            currentPlayerIndex = 0;
+            resetBoard();
         }
-    }
 
-    function handleMove(event) {
-        const row = event.target.dataset.row;
-        const col = event.target.dataset.col;
-        if (boardArray[row][col] === '') {
-            boardArray[row][col] = currentPlayer;
-            event.target.textContent = currentPlayer;
-            if (checkWin(row, col)) {
-                alert(`${currentPlayer} wins!`);
-                score[currentPlayer]++;
-                updateScore();
-                expandBoard();
-            } else if (checkDraw()) {
-                alert("It's a draw!");
-                expandBoard();
-            } else {
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        function getPlayerColor(playerNumber) {
+            const colors = ["red", "green", "blue", "yellow", "purple", "orange", "cyan", "magenta", "brown"];
+            return colors[playerNumber - 1];
+        }
+
+        function resetBoard() {
+            board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(null));
+            const gameBoard = document.getElementById('game-board');
+            gameBoard.style.gridTemplateColumns = `repeat(${boardSize}, 100px)`;
+            gameBoard.style.gridTemplateRows = `repeat(${boardSize}, 100px)`;
+            gameBoard.innerHTML = '';
+
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 0; col < boardSize; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener('click', handleTurn);
+                    gameBoard.appendChild(cell);
+                }
             }
+
+            updateStatus();
         }
-    }
 
-    function checkWin(row, col) {
-        row = parseInt(row);
-        col = parseInt(col);
-        // Check row
-        if (boardArray[row].every(cell => cell === currentPlayer)) return true;
-        // Check column
-        if (boardArray.every(row => row[col] === currentPlayer)) return true;
-        // Check diagonals
-        if (row === col && boardArray.every((row, i) => row[i] === currentPlayer)) return true;
-        if (row + col === boardSize - 1 && boardArray.every((row, i) => row[boardSize - 1 - i] === currentPlayer)) return true;
-        return false;
-    }
+        function handleTurn(event) {
+            const cell = event.target;
+            const row = cell.dataset.row;
+            const col = cell.dataset.col;
 
-    function checkDraw() {
-        return boardArray.flat().every(cell => cell !== '');
-    }
+            if (board[row][col] !== null) return; // Cell is already occupied
 
-    function expandBoard() {
-        boardSize++;
-        boardArray = Array(boardSize).fill().map(() => Array(boardSize).fill(''));
-        initializeBoard();
-    }
+            const player = players[currentPlayerIndex];
+            board[row][col] = player.id;
+            cell.classList.add(`player-${player.id}`);
 
-    function updateScore() {
-        scoreX.textContent = score.X;
-        scoreO.textContent = score.O;
-    }
+            if (checkStreak(player, row, col)) {
+                player.points += 1;
+                player.currentStreak += 2; // Increment to next streak (5, 7, 9, etc.)
+                alert(`Player ${player.id} achieved a streak!`);
+            }
 
-    initializeBoard();
-</script>
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateStatus();
+        }
 
+        function checkStreak(player, row, col) {
+            // Implement logic to check for the current streak length and return true if achieved
+            return false; // Placeholder: Replace with actual streak-checking logic
+        }
+
+        function updateStatus() {
+            const player = players[currentPlayerIndex];
+            document.getElementById('status').textContent = `Player ${player.id}'s turn (Target: ${player.currentStreak} in a row)`;
+        }
+
+        document.getElementById('reset-button').addEventListener('click', initializeGame);
+
+        // Initialize the game on page load
+        initializeGame();
+    </script>
 </body>
 </html>
