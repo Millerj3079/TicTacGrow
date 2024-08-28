@@ -1,20 +1,38 @@
 # Tic Tac Grow
 
-Tic Tac Grow is an expanded version of the classic Tic Tac Toe game. The game starts with a 3x3 grid, and whenever a player achieves 3 in a row, the board expands outward by one square. The objective is to be the first to achieve 5 points, with subsequent steps requiring increasingly larger winning streaks (5 in a row, 7 in a row, etc.).
+Tic Tac Grow is an expanded version of the classic Tic Tac Toe game, now supporting up to 9 players. The game starts with a 3x3 grid, and whenever a player achieves 3 in a row, the board expands outward by one square. Players earn points by achieving streaks (3 in a row, 5 in a row, etc.), and the first player to reach 5 points wins.
 
 ## Gameplay
 
-1. **Starting the Game**: The game begins on a 3x3 grid.
-2. **Scoring**: When a player makes 3 in a row (horizontally, vertically, or diagonally), they earn 1 point, and the board expands by one square in each direction.
-3. **Continuing Play**: After 3 in a row, the next goal is to achieve 5 in a row, then 7 in a row, and so on, each time earning an additional point.
-4. **Winning**: The first player to reach 5 points wins the game.
+1. **Starting the Game**:
+    - The game begins on a 3x3 grid.
+    - Players are identified by numbers (1-9), with each player assigned a unique color.
+    - Upon load or reset, the game prompts for the number of players.
+
+2. **Scoring**:
+    - Players earn 1 point for completing a streak (3 in a row, 5 in a row, etc.).
+    - After achieving a streak, the player continues to build upon their success, with the next goal increasing to the next odd number (e.g., from 3 to 5).
+
+3. **Continuing Play**:
+    - Players take turns placing their marks on the board.
+    - When a player completes a streak, the board expands outward, and the streak's cells are marked with the player’s color.
+    - Players can continue to build on prior successes, using previously successful streaks in subsequent turns.
+
+4. **Winning**:
+    - The first player to reach 5 points wins the game.
 
 ## How to Play
 
-- **Step 1**: Choose a player to go first (X or O).
-- **Step 2**: Click on an empty cell to place your mark.
-- **Step 3**: After a player gets 3 in a row, the board will automatically expand.
-- **Step 4**: The game continues with increasing goals (5 in a row, 7 in a row, etc.) until one player reaches 5 points.
+- **Step 1**: Start the game by entering the number of players (1-9) when prompted.
+- **Step 2**: Players take turns placing their marks on the board by clicking an empty cell.
+- **Step 3**: After achieving a streak (e.g., 3 in a row), the player earns a point, and the board expands.
+- **Step 4**: The game continues with the next streak target (e.g., 5 in a row) until one player reaches 5 points.
+
+## Visual Aids
+
+- **Player Colors**: Each player is assigned a unique color, which is used to mark cells involved in completed streaks.
+- **Board Expansion**: After each successful streak, the board expands outward to accommodate the growing challenge.
+- **Streak Tracking**: The current streak target and points for each player are displayed, helping players keep track of their progress.
 
 ## Demo
 
@@ -38,10 +56,10 @@ Play the game [here](https://yourusername.github.io/tic-tac-grow).
 - **CSS**: For styling the game interface.
 - **JavaScript**: For game logic and dynamic interaction.
 
-## Contributing
-
-If you'd like to contribute to Tic Tac Grow, please fork the repository, create a new branch for your feature or bugfix, and submit a pull request. Contributions are welcome!
-
 ## License
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+If you'd like to contribute to Tic Tac Grow, please fork the repository, create a new branch for your feature or bugfix, and submit a pull request. Contributions are welcome!
